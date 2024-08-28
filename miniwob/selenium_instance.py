@@ -53,6 +53,7 @@ class SeleniumInstance(Thread):
         index: int,
         subdomain: str,
         headless: bool = False,
+        selenium_hub_url: Optional[str] = None,
         base_url: Optional[str] = None,
         threading: bool = False,
         field_extractor: Optional[FieldExtractor] = None,
@@ -68,6 +69,8 @@ class SeleniumInstance(Thread):
             index: Instance index
             subdomain: MiniWoB task name (e.g., "click-test")
             headless: Whether to render GUI
+            selenium_hub_url: URL of the Selenium Hub with Chrome Node
+                - If None, use ChromeDriver directly
             base_url: Base URL, which is usually one of the following
                 - http://localhost:8000/miniwob/     (served by http-serve)
                 - file:///path/to/miniwob-plusplus/html/miniwob/
@@ -96,6 +99,7 @@ class SeleniumInstance(Thread):
         self.died = False
         self.index = index
         self.headless = headless
+        self.selenium_hub_url = selenium_hub_url
         if subdomain.startswith("flight."):
             if not base_url:
                 base_url = start_http_server(str(HTML_DIR))
@@ -193,7 +197,13 @@ class SeleniumInstance(Thread):
             options.add_argument("no-sandbox")
         else:
             options.add_argument("app=" + self.url)
-        self.driver = webdriver.Chrome(options=options)
+        if self.selenium_hub_url:
+            self.driver = webdriver.Remote(
+                command_executor=self.selenium_hub_url,
+                options=options,
+            )
+        else:
+            self.driver = webdriver.Chrome(options=options)
         self.driver.implicitly_wait(5)
         if self.headless:
             self.driver.get(self.url)
