@@ -25,6 +25,7 @@ class MiniWoBEnvironment(gym.Env):
         self,
         subdomain: Optional[str] = None,
         render_mode: Optional[str] = None,
+        selenium_hub_url: Optional[str] = None,
         base_url: Optional[str] = None,
         action_space_config: Union[str, ActionSpaceConfig] = "all_supported",
         field_extractor: Optional[FieldExtractor] = None,
@@ -43,6 +44,7 @@ class MiniWoBEnvironment(gym.Env):
             render_mode: Render mode. Supported values are:
                 - None: Headless Chrome (default)
                 - "human": Show the Chrome screen
+            selenium_hub_url: Selenium hub URL. If None, uses the standard Chromedriver
             base_url: Base URL, which is usually one of the following
                 - http://localhost:8000/miniwob/     (served by http-serve)
                 - file:///path/to/miniwob-plusplus/html/miniwob/
@@ -75,6 +77,7 @@ class MiniWoBEnvironment(gym.Env):
         self.instance_kwargs = {
             "subdomain": self.subdomain,
             "headless": (render_mode is None),
+            "selenium_hub_url": selenium_hub_url,
             "base_url": base_url,
             "field_extractor": field_extractor,
             "reward_processor": reward_processor,
