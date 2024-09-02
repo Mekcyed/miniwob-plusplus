@@ -191,21 +191,23 @@ class SeleniumInstance(Thread):
         )
         options = webdriver.ChromeOptions()
         options.add_argument(f"window-size={self.window_width},{self.window_height}")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
         if self.headless:
             options.add_argument("headless")
             options.add_argument("disable-gpu")
             options.add_argument("no-sandbox")
-        else:
+        elif not self.selenium_hub_url:
             options.add_argument("app=" + self.url)
         if self.selenium_hub_url:
             self.driver = webdriver.Remote(
                 command_executor=self.selenium_hub_url,
                 options=options,
             )
+            self.driver.maximize_window()
         else:
             self.driver = webdriver.Chrome(options=options)
         self.driver.implicitly_wait(5)
-        if self.headless:
+        if self.headless or self.selenium_hub_url:
             self.driver.get(self.url)
         try:
             WebDriverWait(self.driver, 5).until(
