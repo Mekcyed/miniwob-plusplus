@@ -108,6 +108,10 @@ class MiniWoBEnvironment(gym.Env):
         self.instance.start()
         self.instance.wait()
 
+    def get_selenium_driver(self):
+        """Return the Selenium driver instance."""
+        return self.instance.driver
+
     def reset(
         self,
         seed: Optional[int] = None,
