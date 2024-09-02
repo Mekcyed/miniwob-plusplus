@@ -95,6 +95,12 @@ core.startEpisodeReal = function () {
   document.body.scrollTop = document.documentElement.scrollTop = 0;
   core.cover_div.style.display = 'none';
   core.ept0 = new Date().getTime();
+
+  // Update maxTimeMultiplier at the start of each episode
+  var maxTimeMultiplierInput = document.getElementById('max-time-multiplier');
+  var maxTimeMultiplier = maxTimeMultiplierInput ? maxTimeMultiplierInput.value : 1;
+  core.EPISODE_MAX_TIME = 10000 * maxTimeMultiplier;
+
   core.countdownTimer(core.EPISODE_MAX_TIME);
   // start an end of episode timer
   if(core.EP_TIMER !== null) { clearTimeout(core.EP_TIMER); } // reset timer if needed
@@ -178,6 +184,10 @@ core.DISPLAY_HTML = `
   <div class="info">
     <label>Last 10 average:</label>
     <span id='reward-avg'>-</span>
+  </div>
+  <div class="info">
+    <label>Max time multiplier:</label>
+    <input type="number" id="max-time-multiplier" min="1" value="1">
   </div>
   <div class="info">
     <label>Time left:</label>
