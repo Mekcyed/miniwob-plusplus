@@ -96,10 +96,7 @@ core.startEpisodeReal = function () {
   core.cover_div.style.display = 'none';
   core.ept0 = new Date().getTime();
 
-  // Update maxTimeMultiplier at the start of each episode
-  var maxTimeMultiplierInput = document.getElementById('max-time-multiplier');
-  var maxTimeMultiplier = maxTimeMultiplierInput ? maxTimeMultiplierInput.value : 1;
-  core.EPISODE_MAX_TIME = 10000 * maxTimeMultiplier;
+  core.updateMaxEpisodeTime(); // Update max episode time
 
   core.countdownTimer(core.EPISODE_MAX_TIME);
   // start an end of episode timer
@@ -186,6 +183,10 @@ core.DISPLAY_HTML = `
     <span id='reward-avg'>-</span>
   </div>
   <div class="info">
+    <label>Max episode time:</label>
+    <span id='max-episode-time'>10s</span>
+  </div>
+  <div class="info">
     <label>Max time multiplier:</label>
     <input type="number" id="max-time-multiplier" min="1" value="1">
   </div>
@@ -217,12 +218,23 @@ core.createDisplay = function(){
     newDiv.setAttribute('id','reward-display');
     newDiv.innerHTML = core.DISPLAY_HTML;
     document.body.appendChild(newDiv);
+    
+    // Add event listener to update max episode time when multiplier changes
+    var maxTimeMultiplierInput = document.getElementById('max-time-multiplier');
+    maxTimeMultiplierInput.addEventListener('change', core.updateMaxEpisodeTime);
   }
   core.reloadDisplay();
+  core.updateMaxEpisodeTime(); // Update max episode time on display creation
 }
 
-// reload the display, reward stats should be persistent
-// across all tasks and not just within a single task.
+// New function to update max episode time display
+core.updateMaxEpisodeTime = function() {
+  var maxTimeMultiplierInput = document.getElementById('max-time-multiplier');
+  var maxTimeMultiplier = maxTimeMultiplierInput ? maxTimeMultiplierInput.value : 1;
+  core.EPISODE_MAX_TIME = 10000 * maxTimeMultiplier;
+  document.getElementById('max-episode-time').textContent = (core.EPISODE_MAX_TIME / 1000) + 's';
+}
+
 core.reloadDisplay = function(){
   core.wob_latest = core.wob_latest || '-';
   core.wob_scores = core.wob_scores || [];
